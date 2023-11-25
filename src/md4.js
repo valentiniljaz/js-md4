@@ -97,9 +97,6 @@
    */
   var createMethod = function () {
     var method = createOutputMethod('hex');
-    if (NODE_JS) {
-      method = nodeWrap(method);
-    }
     method.create = function () {
       return new Md4();
     };
@@ -111,22 +108,6 @@
       method[type] = createOutputMethod(type);
     }
     return method;
-  };
-
-  var nodeWrap = function (method) {
-    var crypto = require('crypto');
-    var Buffer = require('buffer').Buffer;
-    var nodeMethod = function (message) {
-      if (typeof message === 'string') {
-        return crypto.createHash('md4').update(message, 'utf8').digest('hex');
-      } else if (ARRAY_BUFFER && message instanceof ArrayBuffer) {
-        message = new Uint8Array(message);
-      } else if (message.length === undefined) {
-        return method(message);
-      }
-      return crypto.createHash('md4').update(new Buffer(message)).digest('hex');
-    };
-    return nodeMethod;
   };
 
   /**
